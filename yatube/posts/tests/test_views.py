@@ -271,7 +271,7 @@ class TaskPagesTests(TestCase):
                 )
             )
         )
-        follow_index = response_index.context['page'][0]
+        follow_index = response_index.context['page_obj'][0]
         self.assertEqual(follow_index.text, 'Тестовый текст')
 
         response_index_unfollow = (
@@ -281,7 +281,7 @@ class TaskPagesTests(TestCase):
                 )
             )
         )
-        follow_index_feed = response_index_unfollow.context['page']
+        follow_index_feed = response_index_unfollow.context['page_obj']
         self.assertEqual(len(follow_index_feed), 0)
 
 

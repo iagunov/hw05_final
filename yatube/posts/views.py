@@ -119,12 +119,9 @@ def add_comment(request, post_id):
 def follow_index(request):
     # информация о текущем пользователе доступна в переменной request.user
     post_list = Post.objects.filter(author__following__user=request.user)
-    paginator = Paginator(post_list, 10)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+    page_obj = paginate_queryset(post_list, request)
     context = {
-        'page': page,
-        'paginator': paginator
+        'page_obj': page_obj,
     }
     return render(request, 'posts/follow.html', context)
 
