@@ -16,9 +16,15 @@ class TaskPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='myuser')
-        cls.user_follow = User.objects.create_user(username='myuser-follow')
-        cls.user_follow_feed = User.objects.create_user(username='myuser-follow-feed')
+        cls.user = User.objects.create_user(
+            username='myuser'
+        )
+        cls.user_follow = User.objects.create_user(
+            username='myuser-follow'
+        )
+        cls.user_follow_feed = User.objects.create_user(
+            username='myuser-follow-feed'
+        )
         # создаем тестовую группу поста
         cls.group = Group.objects.create(
             title='Тестовая группа',
@@ -77,7 +83,10 @@ class TaskPagesTests(TestCase):
         response = self.authorized_client.get(
             '/not-exist/'
         )
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.NOT_FOUND
+        )
         self.assertTemplateUsed(
             response, 'core/404.html'
         )
@@ -274,8 +283,6 @@ class TaskPagesTests(TestCase):
         )
         follow_index_feed = response_index_unfollow.context['page']
         self.assertEqual(len(follow_index_feed), 0)
-
-
 
 
 class PaginatorTests(TestCase):
