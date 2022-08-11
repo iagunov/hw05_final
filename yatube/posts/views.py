@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
-from django.core.paginator import Paginator
 
 from .models import Group, Post, Follow
 from .my_paginator import paginate_queryset
