@@ -40,5 +40,5 @@ class TaskURLTests(TestCase):
         }
         for template, url in templates_url_names.items():
             with self.subTest(url=url):
-                response = Client().get(url)
+                response = self.authorized_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)

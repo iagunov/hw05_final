@@ -17,6 +17,8 @@ class TaskPagesTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='myuser')
+        cls.user_follow = User.objects.create_user(username='myuser-follow')
+        cls.user_follow_feed = User.objects.create_user(username='myuser-follow-feed')
         # создаем тестовую группу поста
         cls.group = Group.objects.create(
             title='Тестовая группа',
@@ -33,6 +35,10 @@ class TaskPagesTests(TestCase):
         # авторизуем пользователя
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
+        cls.authorized_client_feed = Client()
+        cls.authorized_client_feed.force_login(cls.user_follow)
+        cls.auth_client_feed = Client()
+        cls.auth_client_feed.force_login(cls.user_follow_feed)
 
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -182,9 +188,14 @@ class TaskPagesTests(TestCase):
 
     def test_post_with_group_profile_show_correct_context(self):
         """Пост с группой есть на странице пользователя."""
-        response = (self.authorized_client.get(
-            reverse('posts:profile',
-                    kwargs={'username': 'myuser'})))
+        response = (
+            self.authorized_client.get(
+                reverse(
+                    'posts:profile',
+                    kwargs={'username': 'myuser'}
+                )
+            )
+        )
         post = response.context['page_obj'][0]
         post_text = post.text
         post_group = post.group.title
@@ -192,6 +203,79 @@ class TaskPagesTests(TestCase):
         self.assertEqual(post_text, 'Тестовый текст')
         self.assertEqual(post_group, 'Тестовая группа')
         self.assertEqual(post_author, 'myuser')
+
+    def test_user_follow(self):
+        """Авторизованный пользователь может подписываться
+        на других пользователей и удалять их из подписок.
+        """
+        self.authorized_client.get(
+            reverse(
+                'posts:profile_follow',
+                kwargs={'username': 'myuser-follow'}
+            )
+        )
+        response_profile = (
+            self.authorized_client.get(
+                reverse(
+                    'posts:profile',
+                    kwargs={'username': 'myuser-follow'}
+                )
+            )
+        )
+        follow = response_profile.context
+        self.assertEqual(follow['following'], True)
+        self.assertEqual(len(follow.keys()), 15)
+
+        self.authorized_client.get(
+            reverse(
+                'posts:profile_unfollow',
+                kwargs={'username': 'myuser-follow'}
+            )
+        )
+
+        response_profile = (
+            self.authorized_client.get(
+                reverse(
+                    'posts:profile',
+                    kwargs={'username': 'myuser-follow'}
+                )
+            )
+        )
+        follow = response_profile.context
+        self.assertEqual(len(follow.keys()), 14)
+
+    def test_follow_feed(self):
+        """Новая запись пользователя появляется
+        в ленте тех, кто на него подписан и не
+        появляется в ленте тех, кто не подписан.
+        """
+        self.authorized_client_feed.get(
+            reverse(
+                'posts:profile_follow',
+                kwargs={'username': 'myuser'}
+            )
+        )
+        response_index = (
+            self.authorized_client_feed.get(
+                reverse(
+                    'posts:follow_index'
+                )
+            )
+        )
+        follow_index = response_index.context['page'][0]
+        self.assertEqual(follow_index.text, 'Тестовый текст')
+
+        response_index_unfollow = (
+            self.auth_client_feed.get(
+                reverse(
+                    'posts:follow_index'
+                )
+            )
+        )
+        follow_index_feed = response_index_unfollow.context['page']
+        self.assertEqual(len(follow_index_feed), 0)
+
+
 
 
 class PaginatorTests(TestCase):

@@ -122,12 +122,11 @@ def follow_index(request):
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return render(
-        request, 'posts/follow.html',
-        {
-            'page': page,
-            'paginator': paginator
-        })
+    context = {
+        'page': page,
+        'paginator': paginator
+    }
+    return render(request, 'posts/follow.html', context)
 
 
 @login_required(login_url='/auth/login/')
