@@ -39,14 +39,12 @@ def profile(request, username):
     page_obj = paginate_queryset(post_list, request)
     following = (
         request.user.is_authenticated and Follow.objects.filter(
-        user=request.user.pk,author=author
-        ).exists()
-    )
+            user=request.user.pk, author=author).exists())
     context = {
         'author': author,
         'page_obj': page_obj,
         'number_post_list': post_list.count,
-        'following': following
+        'following': following,
     }
     return render(request, 'posts/profile.html', context)
 
