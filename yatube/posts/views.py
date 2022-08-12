@@ -39,10 +39,9 @@ def profile(request, username):
     page_obj = paginate_queryset(post_list, request)
     following = (
         request.user.is_authenticated and Follow.objects.filter(
-            user=request.user.pk,
-            author=author
-            ).exists()
-            )
+        user=request.user.pk,author=author
+        ).exists()
+    )
     context = {
         'author': author,
         'page_obj': page_obj,
@@ -55,8 +54,7 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     num_posts = Post.objects.filter(
-        author__username=post.author
-        ).count
+        author__username=post.author).count
     form = CommentForm()
     comments = post.comments.all()
     context = {
