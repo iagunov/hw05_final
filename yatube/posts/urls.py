@@ -28,4 +28,9 @@ urlpatterns = [
         views.profile_unfollow,
         name='profile_unfollow'
     ),
+    path(
+        'profile/<str:username>/follow/',
+        views.profile_follow,
+        name='profile_follow'
+    ),
 ]

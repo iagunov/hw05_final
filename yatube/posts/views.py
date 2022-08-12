@@ -37,22 +37,26 @@ def profile(request, username):
     author = User.objects.get(username=username)
     post_list = author.posts.all()
     page_obj = paginate_queryset(post_list, request)
+    following = (
+        request.user.is_authenticated and Follow.objects.filter(
+            user=request.user.pk,
+            author=author
+            ).exists()
+            )
     context = {
         'author': author,
         'page_obj': page_obj,
         'number_post_list': post_list.count,
+        'following': following
     }
-    if Follow.objects.filter(
-            user=request.user,
-            author=author
-    ):
-        context['following'] = True
     return render(request, 'posts/profile.html', context)
 
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    num_posts = Post.objects.filter(author__username=post.author).count
+    num_posts = Post.objects.filter(
+        author__username=post.author
+        ).count
     form = CommentForm()
     comments = post.comments.all()
     context = {
@@ -129,7 +133,8 @@ def follow_index(request):
 def profile_follow(request, username):
     # Подписаться на автора
     follower = User.objects.get(username=username)
-    Follow.objects.create(user=request.user, author=follower)
+    if not request.user == follower:
+        Follow.objects.get_or_create(user=request.user, author=follower)
     return redirect('posts:follow_index')
 
 

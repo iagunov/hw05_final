@@ -233,7 +233,6 @@ class TaskPagesTests(TestCase):
         )
         follow = response_profile.context
         self.assertEqual(follow['following'], True)
-        self.assertEqual(len(follow.keys()), 15)
 
         self.authorized_client.get(
             reverse(
@@ -251,7 +250,7 @@ class TaskPagesTests(TestCase):
             )
         )
         follow = response_profile.context
-        self.assertEqual(len(follow.keys()), 14)
+        self.assertEqual(follow['following'], False)
 
     def test_follow_feed(self):
         """Новая запись пользователя появляется
