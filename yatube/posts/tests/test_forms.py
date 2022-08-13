@@ -59,6 +59,7 @@ class TaskURLTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cache.clear()
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 

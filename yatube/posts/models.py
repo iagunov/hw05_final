@@ -39,14 +39,11 @@ class Post(CreatedModel):
         verbose_name='у поста может быть группа, если захочешь...',
         help_text='Группа, к которой будет относиться пост'
     )
-    # Поле для картинки (необязательное)
     image = models.ImageField(
         'Картинка',
         upload_to='posts/',
         blank=True
     )
-    # Аргумент upload_to указывает директорию,
-    # в которую будут загружаться пользовательские файлы.
 
     class Meta:
         ordering = ('-created',)
@@ -85,13 +82,11 @@ class Comment(CreatedModel):
 
 
 class Follow(models.Model):
-    # Пользователь который подписывается
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='follower',
     )
-    # Пользователь на которого подписываются
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
